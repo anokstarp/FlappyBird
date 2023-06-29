@@ -7,16 +7,18 @@ protected:
 	sf::Vector2f screenSize;
 	float playerSpeed;
 	float ySpeed;
+	float xSpeed;
 	float gravity;
 	float jumpForce;
 	float accumTime;
-	bool isJump;
+	bool wallJumpRight;
+	bool wallJumpLeft;
 	
 	float countSecond;
 
 public:
 	SceneGame();
-	virtual ~SceneGame() override;
+	virtual ~SceneGame() override = default;
 
 	virtual void Init() override;
 	virtual void Release() override;
@@ -28,5 +30,5 @@ public:
 	virtual void Draw(sf::RenderWindow& window) override;
 
 	void MovePlayer(float dt);
-	void CheckBlockCollision();
+	void CheckBlockCollision(float dt);
 };

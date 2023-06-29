@@ -14,6 +14,8 @@ SceneTitle::SceneTitle()
 	//생성자에서 resources 배열에 삽입
 	resources.push_back(std::make_tuple(ResourceTypes::Font, "fonts/DS-DIGI.ttf"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/Wall1.png"));
+
+	screenSize = FRAMEWORK.GetWindowSize();
 }
 
 void SceneTitle::Init()
@@ -21,7 +23,7 @@ void SceneTitle::Init()
 	Release();
 
 	//AddGo로 gameObjects에 push_back
-	AddGo(new SpriteGo("Wall"));
+	AddGo(new SpriteGo("Bird"));
 	
 	for (auto go : gameObjects)
 	{
@@ -42,8 +44,8 @@ void SceneTitle::Enter()
 {
 	Scene::Enter();
 
-	SpriteGo* Wall = (SpriteGo*)FindGo("Wall");
-	Wall->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Wall1.png"));
+	SpriteGo* bird = (SpriteGo*)FindGo("Bird");
+	bird->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Wall1.png"));
 	Wall->sprite.setPosition(300.f, 300.f);
 }
 
