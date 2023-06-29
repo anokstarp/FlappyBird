@@ -46,7 +46,6 @@ void SceneTitle::Enter()
 
 	SpriteGo* bird = (SpriteGo*)FindGo("Bird");
 	bird->sprite.setTexture(*RESOURCE_MGR.GetTexture("graphics/Wall1.png"));
-	Wall->sprite.setPosition(300.f, 300.f);
 }
 
 void SceneTitle::Exit()
