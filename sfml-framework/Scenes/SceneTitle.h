@@ -9,6 +9,7 @@ class SceneTitle : public Scene
 protected:
 	sf::Vector2f screenSize;
 
+
 public:
 	SceneTitle();
 	virtual ~SceneTitle() override = default;

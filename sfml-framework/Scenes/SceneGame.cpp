@@ -13,27 +13,25 @@
 
 SceneGame::SceneGame()
 	:Scene(SceneId::Game), playerSpeed(0.1f), gravity(0.1f), jumpForce(10.f), 
-	accumTime(0), ySpeed(0), countSecond(0), isJump(false)
+	accumTime(0), ySpeed(0), countSecond(0), wallJumpRight(false)
 {
 	screenSize = FRAMEWORK.GetWindowSize();
-}
-
-SceneGame::~SceneGame()
-{
-	//Release();
 }
 
 void SceneGame::Init()
 {
 	Release();
 
-	playerSpeed = 400.f;
-	gravity = 3.f;
-	jumpForce = 1500.f;
+	playerSpeed = 200.f;
+	gravity = 1.f;
+	jumpForce = 500.f;
 	accumTime = 0.f;
 	ySpeed = 0;
+	xSpeed = 0;
 	countSecond = 0;
-	isJump = false;
+	wallJumpRight = false;
+	wallJumpLeft = false;
+
 
 	for (int i = 0; i < BLOCKS; i++)
 	{
@@ -71,8 +69,8 @@ void SceneGame::Enter()
 	block->SetPosition(0, screenSize.y);
 
 	block = (Block*)FindGo("Block2");
-	block->SetSize(300.f, 300.f);
-	block->SetOrigin(300.f, 300.f);
+	block->SetSize(300.f, 600.f);
+	block->SetOrigin(300.f, 600.f);
 	block->SetFillColor(sf::Color::White);
 	block->SetPosition(screenSize.x, screenSize.y);
 
@@ -109,7 +107,7 @@ void SceneGame::Update(float dt)
 	accumTime += dt;
 
 	MovePlayer(dt);
-	CheckBlockCollision();
+	CheckBlockCollision(dt);
 
 	if (accumTime >= 1.f / 60.f)
 	{
@@ -133,41 +131,55 @@ void SceneGame::MovePlayer(float dt)
 	Block* player = (Block*)FindGo("Player");
 	sf::Vector2f curPos = player->GetPosition();
 
-	if (INPUT_MGR.GetKey(sf::Keyboard::Left))
+	if (INPUT_MGR.GetKey(sf::Keyboard::Left) && !wallJumpLeft && !wallJumpRight)
 	{
 		player->SetPosition(curPos.x - playerSpeed * dt, curPos.y);
 	}
-	if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+	if (INPUT_MGR.GetKey(sf::Keyboard::Right) && !wallJumpLeft && !wallJumpRight)
 	{
 		player->SetPosition(curPos.x + playerSpeed * dt, curPos.y);
 	}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::X))
 	{
 		ySpeed = jumpForce;
-		isJump = true;
 	}
 
 	curPos = player->GetPosition();
 
-	if (isJump)
+	if (wallJumpRight)
+	{
+		player->SetPosition(curPos.x + xSpeed * dt, curPos.y - ySpeed * dt);
+	}
+	else if (wallJumpLeft)
+	{
+		player->SetPosition(curPos.x - xSpeed * dt, curPos.y - ySpeed * dt);
+	}
+	else
 	{
 		player->SetPosition(curPos.x, curPos.y - ySpeed * dt);
 	}
+	
+	
 
 	if (player->GetPosition().y >= screenSize.y)
 	{
 		player->SetPosition(player->GetPosition().x, screenSize.y);
 		ySpeed = 0;
-		isJump = false;
 	}
-	else if(isJump = true)
+	xSpeed -= gravity * 2;
+	if (xSpeed <= 0) 
 	{
-		ySpeed -= gravity;
-		if (ySpeed <= -1000) ySpeed = -1000;
+		xSpeed = 0;
+		wallJumpLeft = false;
+		wallJumpRight = false;
 	}
+	
+
+	ySpeed -= gravity;
+	if (ySpeed <= -500) ySpeed = -500;
 }
 
-void SceneGame::CheckBlockCollision()
+void SceneGame::CheckBlockCollision(float dt)
 {
 	Block* player = (Block*)FindGo("Player");
 	Block* block;
@@ -185,10 +197,32 @@ void SceneGame::CheckBlockCollision()
 		switch (block->CheckCollision(player->GetGlobalBounds()))
 		{
 		case 1: //오른쪽
-			player->SetPosition(blockRect.left + blockRect.width + (SQUARE * 0.5), player->GetPosition().y);
+			if(!wallJumpLeft)
+				player->SetPosition(blockRect.left + blockRect.width + (SQUARE * 0.5), player->GetPosition().y);
+			if (INPUT_MGR.GetKey(sf::Keyboard::Left))
+			{
+				ySpeed = -40;
+				if (INPUT_MGR.GetKeyDown(sf::Keyboard::X))
+				{
+					ySpeed = jumpForce;
+					xSpeed = jumpForce;
+					wallJumpRight = true;
+				}
+			}
 			break;
 		case 2: //왼쪽
-			player->SetPosition(blockRect.left - (SQUARE * 0.5), player->GetPosition().y);
+			if (!wallJumpRight)
+				player->SetPosition(blockRect.left - (SQUARE * 0.5), player->GetPosition().y);
+			if (INPUT_MGR.GetKey(sf::Keyboard::Right))
+			{
+				ySpeed = -40;
+				if (INPUT_MGR.GetKeyDown(sf::Keyboard::X))
+				{
+					ySpeed = jumpForce;
+					xSpeed = jumpForce;
+					wallJumpLeft = true;
+				}
+			}
 			break;
 		case 3: //아래
 			player->SetPosition(player->GetPosition().x, blockRect.top + blockRect.height + SQUARE);
@@ -196,13 +230,14 @@ void SceneGame::CheckBlockCollision()
 			break;
 		case 4: //위에
 			player->SetPosition(player->GetPosition().x, blockRect.top);
-			isJump = false;
+			//isJump = false;
 			break;
 		case 5:
-	
+			player->SetPosition(player->GetPosition().x, blockRect.top - SQUARE);
 			break;
 		case 6:
-			ySpeed = 100;
+			player->SetPosition(player->GetPosition().x, player->GetPosition().y - 400 * dt);
+			ySpeed = -200;
 			break;
 		default:
 			break;
