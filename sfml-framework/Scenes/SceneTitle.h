@@ -9,6 +9,11 @@ class SceneTitle : public Scene
 protected:
 	sf::Vector2f screenSize;
 
+	float ySpeed;
+	float gravity;
+	float jumpForce;
+	float blockSpeed;
+
 
 public:
 	SceneTitle();
@@ -22,5 +27,9 @@ public:
 
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
+
+	void JumpPlayer(float dt);
+	void MoveBlock(float dt);
+	void ResetBlock();
 };
 

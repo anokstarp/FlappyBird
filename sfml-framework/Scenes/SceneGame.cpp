@@ -16,6 +16,9 @@ SceneGame::SceneGame()
 	accumTime(0), ySpeed(0), countSecond(0), wallJumpRight(false)
 {
 	screenSize = FRAMEWORK.GetWindowSize();
+
+	resources.push_back(std::make_tuple(ResourceTypes::Font, "fonts/DS-DIGI.ttf"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/bee.png"));
 }
 
 void SceneGame::Init()

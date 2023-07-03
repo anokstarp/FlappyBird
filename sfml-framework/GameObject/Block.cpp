@@ -100,12 +100,6 @@ int Block::CheckCollisionState_1(sf::FloatRect ballRect)
 	sf::FloatRect intersect;
 	sf::FloatRect blockRect = block.getGlobalBounds();
 
-	float ballVerticalMid = ((ballRect.left * 2) + ballRect.width) * 0.5f;
-	float ballHorizontalMid = ((ballRect.top * 2) + ballRect.height) * 0.5f;
-
-	float blockVerticalMid = ((blockRect.left * 2) + blockRect.width) * 0.5f;
-	float blockHorizontalMid = ((blockRect.top * 2) + blockRect.height) * 0.5f;
-
 
 	//intersect에 겹치는 부분의 rect가 들어온다
 	if (blockRect.intersects(ballRect, intersect))
